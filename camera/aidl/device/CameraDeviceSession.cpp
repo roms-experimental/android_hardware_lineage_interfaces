@@ -8,6 +8,7 @@
 #define ATRACE_TAG ATRACE_TAG_CAMERA
 
 #include "CameraDeviceSession.h"
+#include "JpegBlobFixup.h"
 
 #include <CameraModule.h>
 #include <aidl/android/hardware/camera/device/ErrorMsg.h>
@@ -1629,6 +1630,12 @@ void CameraDeviceSession::sProcessCaptureResult(const camera3_callback_ops* cb,
                                                 const camera3_capture_result* hal_result) {
     CameraDeviceSession* d =
             const_cast<CameraDeviceSession*>(static_cast<const CameraDeviceSession*>(cb));
+
+#ifdef LEGACY_JPEG_BLOB_FIXUP
+    for (uint32_t i = 0; i < hal_result->num_output_buffers; i++) {
+        fixUpLegacyJpegBlobHeader(hal_result->output_buffers[i]);
+    }
+#endif
 
     CaptureResult result = {};
     camera3_capture_result shadowResult;

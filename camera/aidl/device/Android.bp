@@ -4,13 +4,36 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+soong_config_module_type {
+    name: "lineage_camera_device_config_default",
+    module_type: "cc_defaults",
+    config_namespace: "lineage_camera",
+    bool_variables: [
+        "legacy_jpeg_blob_fixup",
+    ],
+    properties: ["cflags"],
+}
+
+lineage_camera_device_config_default {
+    name: "lineage_camera_device_config_default",
+    soong_config_variables: {
+        legacy_jpeg_blob_fixup: {
+            cflags: ["-DLEGACY_JPEG_BLOB_FIXUP"],
+        },
+    },
+}
+
 cc_library_shared {
     name: "camera.device-impl.lineage",
-    defaults: ["android.hardware.graphics.common-ndk_shared"],
+    defaults: [
+        "android.hardware.graphics.common-ndk_shared",
+        "lineage_camera_device_config_default",
+    ],
     vendor: true,
     srcs: [
         "CameraDevice.cpp",
         "CameraDeviceSession.cpp",
+        "JpegBlobFixup.cpp",
         "convert.cpp",
     ],
     shared_libs: [
